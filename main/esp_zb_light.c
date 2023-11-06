@@ -8,6 +8,9 @@
 #include "string.h"
 #include "driver/gpio.h"
 #include "DHT22.h"
+// modification to allow for missing DHT22 device
+#define getTemperature() 1
+#define getHumidity() 1
 
 static const char *TAG = "DEMO";
 void reportAttribute(uint8_t endpoint, uint16_t clusterID, uint16_t attributeID, void *value, uint8_t value_length)
@@ -46,13 +49,15 @@ void dht22_task(void *pvParameters)
 {
     while (1)
     {
-        setDHTgpio(GPIO_NUM_8);
-        int ret = readDHT();
-        if (ret != DHT_OK)
-            errorHandler(ret);
-        else
+        /********* PF modification  disable DHT device ************/
+
+        //setDHTgpio(GPIO_NUM_8);
+        //int ret = readDHT();
+        //if (ret != DHT_OK)
+        //    errorHandler(ret);
+        //else
         {
-            ESP_LOGI(TAG, "Hum: %.1f Tmp: %.1f", getHumidity(), getTemperature());
+         //   ESP_LOGI(TAG, "Hum: %.1f Tmp: %.1f", getHumidity(), getTemperature());
             uint16_t temperature = (uint16_t)(getTemperature() * 100);
             uint16_t humidity = (uint16_t)(getHumidity() * 100);
             reportAttribute(HA_ESP_LIGHT_ENDPOINT, ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT, ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID, &temperature, 2);
@@ -169,8 +174,10 @@ static void esp_zb_task(void *pvParameters)
     uint32_t ApplicationVersion = 0x0001;
     uint32_t StackVersion = 0x0002;
     uint32_t HWVersion = 0x0002;
-    uint8_t ManufacturerName[] = {14, 'G', 'a', 'm', 'm', 'a', 'T', 'r', 'o', 'n', 'i', 'q', 'u', 'e', 's'}; // warning: this is in format {length, 'string'} :
-    uint8_t ModelIdentifier[] = {4, 'D', 'e', 'm', 'o'};
+    // uint8_t ManufacturerName[] = {14, 'G', 'a', 'm', 'm', 'a', 'T', 'r', 'o', 'n', 'i', 'q', 'u', 'e', 's'}; // warning: this is in format {length, 'string'} :
+    uint8_t ManufacturerName[] = {6, 'v', 'd', 'o', 'm', 'o', 's'} ;
+    //uint8_t ModelIdentifier[] = {4, 'D', 'e', 'm', 'o'};
+    uint8_t ModelIdentifier[] = {10, 'E', 'S', 'P', '3', '2', '-', 'H', '2', '_', '1'};
     uint8_t DateCode[] = {8, '2', '0', '2', '3', '0', '8', '2', '6'};
     esp_zb_attribute_list_t *esp_zb_basic_cluster = esp_zb_basic_cluster_create(&basic_cluster_cfg);
     esp_zb_basic_cluster_add_attr(esp_zb_basic_cluster, ESP_ZB_ZCL_ATTR_BASIC_APPLICATION_VERSION_ID, &ApplicationVersion);
