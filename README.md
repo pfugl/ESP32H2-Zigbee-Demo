@@ -1,6 +1,7 @@
 # ESP32-H2 Demo Zigbee Device
 
 This project is a demo Zigbee device based on the ESP32-H2 / ESP32-C6
+Modified to bypass the code for DHT22. See comments in c and h files to reverse changes.
 
 ## Features
 
