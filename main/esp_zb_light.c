@@ -13,6 +13,10 @@
 #define getHumidity() 1
 
 static const char *TAG = "DEMO";
+/**
+ * @brief Send a ZCL report attributes command to report the given attribute 
+ * value for the specified endpoint, cluster, and attribute ID.
+ */
 void reportAttribute(uint8_t endpoint, uint16_t clusterID, uint16_t attributeID, void *value, uint8_t value_length)
 {
     esp_zb_zcl_report_attr_cmd_t cmd = {
@@ -67,11 +71,30 @@ void dht22_task(void *pvParameters)
     }
 }
 
+/**
+ * Callback for when top level commissioning is started.
+ *
+ * This callback is invoked when the application calls 
+ * esp_zb_bdb_start_top_level_commissioning() to begin the top
+ * level commissioning process.
+ *
+ * @param mode_mask Commissioning mode mask.
+ */
 static void bdb_start_top_level_commissioning_cb(uint8_t mode_mask)
 {
     ESP_ERROR_CHECK(esp_zb_bdb_start_top_level_commissioning(mode_mask));
 }
 
+/**
+ * @brief Handle Zigbee attribute write requests 
+ * 
+ * This function handles attribute write requests sent to the light bulb endpoint.
+ * It checks the endpoint, cluster ID, and attribute ID to determine if it is a request
+ * to update the on/off state of the light. If so, it updates the GPIO accordingly.
+ * 
+ * @param message Pointer to the ZCL attribute write message
+ * @return esp_err_t ESP_OK if handled successfully, or error code
+*/
 static esp_err_t zb_attribute_handler(const esp_zb_zcl_set_attr_value_message_t *message)
 {
     esp_err_t ret = ESP_OK;
@@ -161,8 +184,9 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal_struct)
 }
 /* initialize Zigbee stack with Zigbee end-device config */
 
-static void esp_zb_task(void *pvParameters)
-{
+
+static void esp_zb_task(void * pvParameters)
+{ 
     esp_zb_cfg_t zb_nwk_cfg = ESP_ZB_ZED_CONFIG();
     esp_zb_init(&zb_nwk_cfg);
 
@@ -171,6 +195,7 @@ static void esp_zb_task(void *pvParameters)
         .zcl_version = ESP_ZB_ZCL_BASIC_ZCL_VERSION_DEFAULT_VALUE,
         .power_source = 0x03,
     };
+
     uint32_t ApplicationVersion = 0x0001;
     uint32_t StackVersion = 0x0002;
     uint32_t HWVersion = 0x0002;
@@ -246,6 +271,12 @@ static void esp_zb_task(void *pvParameters)
     esp_zb_main_loop_iteration();
 }
 
+/**
+ * @brief Application entry point
+ *
+ * Initializes NVS flash, loads Zigbee platform configuration, creates Zigbee
+ * task, initializes GPIOs for LED, button and sensor.
+ */
 void app_main(void)
 {
     esp_zb_platform_config_t config = {
@@ -259,6 +290,7 @@ void app_main(void)
     xTaskCreate(esp_zb_task, "Zigbee_main", 4096, NULL, 5, NULL);
 
     gpio_set_direction(GPIO_NUM_12, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(GPIO_NUM_12, GPIO_PULLUP_ONLY);
 
     gpio_set_direction(GPIO_NUM_0, GPIO_MODE_OUTPUT);
     gpio_set_level(GPIO_NUM_0, 0);
