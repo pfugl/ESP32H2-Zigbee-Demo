@@ -22,4 +22,4 @@ Modified to bypass the code for DHT22. See comments in c and h files to reverse 
 | ------ | -------------------------------------------------------------------------------------- |
 | GPIO8  | DHT22 data                                                                             |
 | GPIO0  | Binary output (LED):  Catode til gnd, anode via 1k to GPIO0                            |
-| GPIO12 | Binary input (Button): Button between GPIP12 and gnd. 10k pull up from GPIO12  to +3.3 |
+| GPIO12 | Binary input (Button): Button between GPIO12 and gnd. GPIO12 configured as internal pullup. |
