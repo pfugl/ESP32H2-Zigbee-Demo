@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "idf.portWin": "COM8",
+=======
+  "idf.portWin": "COM3",
+>>>>>>> e64e816e7924bc3d45aa9100a3d2f10b13eb1306
   "idf.adapterTargetName": "esp32c6",
   "idf.openOcdConfigs": [
     "board/esp32c6-bridge.cfg"
